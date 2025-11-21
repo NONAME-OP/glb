@@ -1,0 +1,935 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <title>Nonameop</title>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+        <meta name="description" content="A threejs CHAOS renderer example using threejs boilerplate - by NONAME">
+
+        <meta property="og:url" content="https://threej-CHAOS.tiiny.site/">
+        <meta property="og:type" content="website">
+        <meta property="og:title" content="Threejs CHAOS - By NONAME">
+        <meta property="og:description" content="A threejs CHAOS renderer example using threejs boilerplate - by NONAME">
+        <meta property="og:image" content="../static/textures/imageSocial.jpg">
+
+        <meta name="twitter:card" content="summary_large_image">
+        <meta property="twitter:domain" content="threejs-CHAOS.tiiny.site/">
+        <meta property="twitter:url" content="https://threejs-CHAOS.tiiny.site/">
+        <meta name="twitter:title" content="Threejs CHAOS - By NONAME">
+        <meta name="twitter:description" content="A threejs CHAOS renderer example using threejs boilerplate - by NONAME">
+        <meta name="twitter:image" content="../static/textures/imageSocial.jpg">
+
+        <meta name="keywords" content="ThreeJS, HTML, CSS, JavaScript">
+        <meta name="author" content="NONAME">
+
+        
+
+        <link rel="preconnect" href="https://fonts.googleapis.com">
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=Josefin+Sans&family=Nanum+Myeongjo&display=swap" rel="stylesheet">
+        
+
+        
+        
+        <body>
+            <!-- Loading Screen -->
+            <div id="loading-screen" style="position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; z-index: 1000; background: #000; display: flex; flex-direction: column; align-items: center; justify-content: center;">
+                <!-- Video Background -->
+                <video id="loading-video-bg" autoplay loop controls style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover; z-index: -1; opacity: 0.3;">
+                    <source src="../static/LOADINGSCREEN.mp4" type="video/mp4">
+                </video>
+                
+                <!-- Enhanced Loading SVG -->
+                <svg width="200" height="200" viewBox="0 0 200 200" style="margin-bottom: 40px;">
+                    <defs>
+                        <linearGradient id="loadingGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                            <stop offset="0%" style="stop-color:#f9f0ec;stop-opacity:1" />
+                            <stop offset="50%" style="stop-color:#88b2d9;stop-opacity:1" />
+                            <stop offset="100%" style="stop-color:#f9f0ec;stop-opacity:1" />
+                        </linearGradient>
+                        <radialGradient id="centerGlow" cx="50%" cy="50%" r="50%">
+                            <stop offset="0%" style="stop-color:#f9f0ec;stop-opacity:0.8" />
+                            <stop offset="100%" style="stop-color:#88b2d9;stop-opacity:0.2" />
+                        </radialGradient>
+                        <filter id="glow">
+                            <feGaussianBlur stdDeviation="3" result="coloredBlur"/>
+                            <feMerge> 
+                                <feMergeNode in="coloredBlur"/>
+                                <feMergeNode in="SourceGraphic"/>
+                            </feMerge>
+                        </filter>
+                    </defs>
+                    
+                    <!-- Outer Ring -->
+                    <circle cx="100" cy="100" r="80" fill="none" stroke="rgba(255,255,255,0.1)" stroke-width="3"/>
+                    <circle cx="100" cy="100" r="80" fill="none" stroke="url(#loadingGradient)" stroke-width="3" stroke-dasharray="502" stroke-dashoffset="502" id="outer-ring"/>
+                    
+                    <!-- Middle Ring -->
+                    <circle cx="100" cy="100" r="60" fill="none" stroke="rgba(255,255,255,0.15)" stroke-width="2"/>
+                    <circle cx="100" cy="100" r="60" fill="none" stroke="url(#loadingGradient)" stroke-width="2" stroke-dasharray="377" stroke-dashoffset="377" id="middle-ring"/>
+                    
+                    <!-- Inner Ring -->
+                    <circle cx="100" cy="100" r="40" fill="none" stroke="rgba(255,255,255,0.2)" stroke-width="2"/>
+                    <circle cx="100" cy="100" r="40" fill="none" stroke="url(#loadingGradient)" stroke-width="2" stroke-dasharray="251" stroke-dashoffset="251" id="inner-ring"/>
+                    
+                    <!-- Center Core -->
+                    <circle cx="100" cy="100" r="25" fill="url(#centerGlow)" filter="url(#glow)"/>
+                    
+                    <!-- Rotating Elements -->
+                    <g id="rotating-elements" transform="rotate(0 100 100)">
+                        <circle cx="100" cy="30" r="3" fill="#f9f0ec" opacity="0.8"/>
+                        <circle cx="100" cy="170" r="3" fill="#88b2d9" opacity="0.8"/>
+                        <circle cx="30" cy="100" r="3" fill="#f9f0ec" opacity="0.8"/>
+                        <circle cx="170" cy="100" r="3" fill="#88b2d9" opacity="0.8"/>
+                        <circle cx="70" cy="70" r="2" fill="#f9f0ec" opacity="0.6"/>
+                        <circle cx="130" cy="130" r="2" fill="#88b2d9" opacity="0.6"/>
+                        <circle cx="70" cy="130" r="2" fill="#f9f0ec" opacity="0.6"/>
+                        <circle cx="130" cy="70" r="2" fill="#88b2d9" opacity="0.6"/>
+                    </g>
+                    
+                    <!-- Pulsing Dots -->
+                    <circle cx="100" cy="100" r="15" fill="url(#loadingGradient)" opacity="0.9" id="pulse-core"/>
+                </svg>
+                
+                <!-- Loading Status -->
+                <div id="loading-status">Loading...</div>
+                
+                <!-- Progress Bar -->
+                <div id="progress-bar-container" style="width: 300px; height: 8px; background: rgba(255,255,255,0.2); border-radius: 4px; margin: 20px auto; overflow: hidden;">
+                    <div id="progress-bar" style="width: 0%; height: 100%; background: linear-gradient(90deg, #667eea, #764ba2); border-radius: 4px; transition: width 0.3s ease; box-shadow: 0 0 10px rgba(102, 126, 234, 0.5);"></div>
+                </div>
+                
+                <!-- Continue Button -->
+                <button id="continue-btn" style="margin-top: 30px; padding: 15px 30px; background: linear-gradient(45deg, #f9f0ec, #88b2d9); border: none; border-radius: 30px; color: #000; font-family: 'Josefin Sans', sans-serif; font-size: 16px; font-weight: 600; cursor: pointer; opacity: 0; transform: translateY(20px); transition: all 0.4s ease; box-shadow: 0 8px 25px rgba(249, 240, 236, 0.3); display: none;">
+                    <span style="display: inline-block; margin-right: 8px;">🚀</span>
+                    Enter Experience
+                </button>
+                
+                <!-- Start Experience Button -->
+                <button id="start-experience-btn" class="start-btn-animated btn-glitch" style="display: none; opacity: 0; transform: translateY(30px) scale(0.8);">
+                    <span class="btn-text text">Start Experience</span>
+                    <span class="btn-icon decoration"> </span>
+                </button>
+                <p class="loading-status-text"></p>
+
+<script>
+    const messages = [
+        "UMUTE THE SOUND AND CLICK START TO ENTER THE EXPERIENCE...",
+        "REMEMBER THE LIGHT TRAVELS ALONG YOUR MOUSE CURSOR",
+        "BE FREE IN CHECKING OUT THE LINKS",
+        "LOADING DEPENDS ON SERVER AND YOUR DEVICE",
+        "OPTIMIZING CHAOS ENGINE...",
+    ];
+
+    const loadingTextEl = document.querySelector(".loading-status-text");
+    let index = 0;
+
+    function showNextMessage() {
+        loadingTextEl.style.opacity = 0; // fade out
+        setTimeout(() => {
+            loadingTextEl.textContent = messages[index];
+            loadingTextEl.style.opacity = 1; // fade in
+            index = (index + 1) % messages.length;
+        }, 500); // match fade duration
+    }
+
+    // Initialize styles for fade effect
+    loadingTextEl.style.transition = "opacity 0.5s ease";
+    loadingTextEl.textContent = messages[0];
+
+    // Change message every 3 seconds
+    setInterval(showNextMessage, 3000);
+</script>
+
+                <!-- SVG Filter for Gooey Effect -->
+                <svg xmlns="http://www.w3.org/2000/svg" version="1.1" style="position: absolute; width: 0; height: 0;">
+                    <defs>
+                        <filter id="goo">
+                            <feGaussianBlur in="SourceGraphic" stdDeviation="10" result="blur" />
+                            <feColorMatrix in="blur" mode="matrix" values="1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  0 0 0 18 -7" result="goo" />
+                            <feComposite in="SourceGraphic" in2="goo" operator="atop"/>
+                        </filter>
+                    </defs>
+                </svg>
+            </div>
+            
+            <!-- Custom Cursor -->
+            <div class="cursor" style="position: fixed; width: 20px; height: 20px; background: rgba(255,255,255,0.5); border-radius: 50%; pointer-events: none; z-index: 9999; transition: all 0.1s ease; mix-blend-mode: difference;"></div>
+            
+           
+
+            <div class="main-container" style="visibility:hidden;">
+                <nav class="header"><a class="active a"><span>DONATE</span></a><a class="a"><span>ABOUT</span></a><a class="a"><span>UPCOMING PROJECTS</span></a><a class="a"></div></nav>
+                
+                <div class="first">
+
+                    <h1>CHAOS EVERYWHERE</h1>
+                    <p>IT IS CHAOTIC ENVIRONMENT WHERE EVERY PART OF WORLD CAN BE VISULIZESD AS REAL AS POSSIBLE</p>
+                </div>
+<div CLASS="op">
+    
+    <div class="container">
+       
+        <div class="card">
+          <h3>JAVASCRIPT</h3>
+          <p>We extend our expertise in React.js, Three.js,TypeScriptJs and modern web technologies.</p>
+        </div>
+        <div class="card">
+          <h3>JAVA</h3>
+          <p>We are proficient in Java programming, applying robust OOP principles to build scalable and efficient applications.</p>
+        </div>
+        <div class="card">
+          <h3>BLENDER</h3>
+          <p>We specialize in Blender 3D, creating animations and immersive game development that turn ideas into real-world solutions.</p>
+        </div>
+        <div class="card">
+          <h3>DATABASE</h3>
+          <p>We are skilled in database technologies, including SQL, MySQL, MongoDB, and other modern DBMS solutions.</p>
+        </div>
+        <div class="card">
+          <h3>C/C++</h3>
+          <p>Proficient in C and C++, developing efficient, high-performance applications with a focus on robust logic and optimization.</p>
+        </div>
+        <div class="card">
+          <h3>PYTHON</h3>
+          <p>Experienced in Python programming, developing versatile solutions for web, automation, data processing, and problem-solving.</p>
+        </div>
+      </div>
+</div> 
+
+      <p align="center">With expertise across these software tools, we bring creative and effective solutions to a wide range of platforms.</p>
+
+                <div class="section second">
+                    <div class="second-container">
+                        <ul>
+                            <li id="aglaea" class="active">M.D KAIF</li>
+                            <li id="thalia"><a>VENU PRASAD A</a></li>
+                            <li id="euphre">SHRISHA JOSHI </li>
+                        </ul><ul>
+                            <li id="SAI">ZAYAAN</li>
+                            <li id="KI">SAI KIRAN K</li>
+                            <li id="RAN">SUKUMAR</li>
+                            <li id="sh">SHISHIR</li> </ul><ul>
+                            </ul>
+                        <p id="content">CHAOS EVEYWHERE A PLATFORM WHERE CREATIVE AND CHAOTIC MIND COME TOGETHER TO PROVIDE A CHOATIC AND EDUCATIONAL CONTENT EITHER BY 3D,EDITING,OR ANIMATIONS</p>
+                    </div>
+                    <div id="canvas-container-details"></div>
+                </div>
+
+                <div class="third">
+
+    <div class="testimonial-wrapper">
+      <!-- Images -->
+      <div class="testimonial-image-stack">
+        <img src="https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?q=80" class="active" alt="VENU PRASAD A">
+        <img src="https://images.unsplash.com/photo-1438761681033-6461ffad8d80?q=80" alt="Michael Rodriguez">
+        <img src="https://images.unsplash.com/photo-1623582854588-d60de57fa33f?q=80" alt="Emily Watson">
+        <img src="https://images.unsplash.com/photo-1636041293178-808a6762ab39?q=80" alt="James Kim">
+        <img src="https://images.unsplash.com/photo-1624561172888-ac93c696e10c?q=80" alt="Lisa Thompson">
+        <img src="https://images.unsplash.com/photo-1624561172888-ac93c696e10c?q=80" alt="Lisa Thompson">
+        <img src="https://images.unsplash.com/photo-1624561172888-ac93c696e10c?q=80" alt="Lisa Thompson">
+
+      </div>
+
+      <!-- Content -->
+      <div class="testimonial-content show">
+        <div class="testimonial-name">VENU PRASAD A</div>
+        <div class="testimonial-role">Product Manager at TechFlow</div>
+        <div class="testimonial-quote">
+          The attention to detail and innovative features have completely transformed our workflow.
+          This is exactly what we've been looking for.
+        </div>
+        
+        <div class="testimonial-buttons">
+          <button class="testimonial-btn" id="prevBtn">&#8592;</button>
+          <button class="testimonial-btn" id="nextBtn">&#8594;</button>
+        </div>
+      </div>
+    </div><div class="spotlight-wrapper">
+    <div class="spotlight" id="spotlight"></div>
+    <div class="content">
+      <h1>
+        “Projects that went beyond brainstorming.”
+      </h1>
+      <p>
+        From concept to creation, these works showcase our ability to transform ideas into experiences that are both innovative and impactful.
+      </p>
+      <div class="glowing-box glowing-box-active" style="--animation-speed:2s">
+  <div class="glowing-box-animations">
+    <div class="glowing-box-glow"></div>
+    <div class="glowing-box-stars-masker">
+      <div class="glowing-box-stars"></div>
+    </div>
+  </div>
+  <div class="glowing-box-borders-masker">
+    <div class="glowing-box-borders"></div>
+  </div>
+  <button class="glowing-box-button">
+    <span class="glowing-span">EXPLORE</span>
+  </button>
+</div>
+
+    </div>
+  </div>
+  </div>
+
+                
+                
+                <div id="canvas-container" class="fixed"></div> 
+                
+               <h4 class="footer">Created by Noname</a></h4>
+
+    
+              </div>
+             <!-- Login Popup -->
+<div id="popup" class="popup" aria-hidden="false">
+  <!-- This is the login form -->
+  <form id="signupForm" class="form">
+    <p>
+      Welcome,<span> sign in to continue</span>
+    </p>
+
+    <button type="button" id="googleBtn" class="oauthButton google">Continue with Google</button>
+    <button type="button" id="githubBtn" class="oauthButton github">Continue with GitHub</button>
+
+    <div class="separator">
+      <div></div><span>OR</span><div></div>
+    </div>
+
+    <input type="email" placeholder="Email" name="email" required>
+    <button type="submit" class="oauthButton">Continue</button>
+  </form>
+
+  <!-- Signed-in state (hidden by default) -->
+  <div id="signedInBox" class="signed-in" style="display:none; text-align:center; margin-top:1rem;">
+  </div>
+</div>
+<script>
+async function fakeAuth(provider, email) {
+  // Replace with your real backend auth
+  return new Promise(resolve => {
+    setTimeout(() => {
+      resolve({
+        signedIn: true,
+        name: provider === "google" ? "Google User"
+             : provider === "github" ? "GitHub User"
+             : email,
+        avatar: provider === "google"
+          ? "https://www.svgrepo.com/show/475656/google-color.svg"
+          : provider === "github"
+          ? "https://www.svgrepo.com/show/475654/github-color.svg"
+          : "https://www.svgrepo.com/show/452213/email.svg"
+      });
+    }, 800);
+  });
+}
+function isAllowedEmail(email) {
+  const ALLOWED_EMAILS = [
+    "admin@noname.com",
+    "saikiran2425k@gmail.com"
+  ];
+  const ALLOWED_DOMAINS = ["noname.com"];
+
+  const domain = email.split("@")[1].toLowerCase();
+  return ALLOWED_EMAILS.includes(email.toLowerCase()) || ALLOWED_DOMAINS.includes(domain);
+}
+
+function showSignedIn(user) {
+  // Hide form
+  document.getElementById("signupForm").style.display = "none";
+
+  // Show signed-in box
+  const box = document.getElementById("signedInBox");
+  box.style.display = "block";
+  box.innerHTML = `
+    <div style="
+      display:flex;
+      align-items:center;
+      justify-content:flex-start;
+      gap:.8rem;
+      padding:1rem 1.2rem;
+      border-radius:.75rem;
+      background:#ecfdf5;
+      color:#065f46;
+      font-family:system-ui, sans-serif;
+      font-size:14px;
+      font-weight:500;
+    ">
+      <img src="${user.avatar}" alt="${user.name}" 
+           style="width:32px;height:32px;border-radius:50%;object-fit:cover;background:#fff;"/>
+      <span>Signed in as <b>${user.name}</b></span>
+      <svg width="20" height="20" viewBox="0 0 24 24" style="margin-left:auto;">
+        <circle cx="12" cy="12" r="10" fill="#10B981"/>
+        <path d="M16.5 9l-5 5-3-3" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+    </div>
+
+    <!-- Loader under the signed-in box -->
+    <div style="margin-top:20px; display:flex; justify-content:center;">
+      <ul class="loader">
+        <li class="ball"></li>
+        <li class="ball"></li>
+        <li class="ball"></li>
+      </ul>
+    </div>
+  `;
+
+  // Optional: remove loader after some time
+  setTimeout(() => {
+    const loader = document.querySelector('#signedInBox .loader');
+    if (loader) loader.parentElement.remove();
+  }, 3000); // remove after 3 seconds
+}
+
+
+// Google login
+document.getElementById("googleBtn").addEventListener("click", async () => {
+  const user = await fakeAuth("google");
+  showSignedIn(user);
+});
+
+// GitHub login
+document.getElementById("githubBtn").addEventListener("click", async () => {
+  const user = await fakeAuth("github");
+  showSignedIn(user);
+});
+
+// Email login
+document.getElementById("signupForm").addEventListener("submit", function (e) {
+  e.preventDefault();
+  const email = e.target.email.value.trim();
+
+  if (!isAllowedEmail(email)) {
+    alert("❌ Access Denied. You are not allowed to sign in.");
+    return; // stop here
+  }
+
+  showSignedIn({
+    email,
+    name: email.split("@")[0],
+    avatar: "https://cdn-icons-png.flaticon.com/512/149/149071.png"
+  });
+});
+
+</script>
+
+
+   <!-- Firebase SDKs -->
+<script type="module">
+  // Import Firebase
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+  import { getAuth, signInWithPopup, GoogleAuthProvider, GithubAuthProvider } 
+    from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+
+  // Firebase Config
+  const firebaseConfig = {
+    apiKey: "AIzaSyAeixck8Q8WTLs-FPuMPRyNZgvlnsTruCg",
+    authDomain: "noname-1ccc5.firebaseapp.com",
+    projectId: "noname-1ccc5",
+    storageBucket: "noname-1ccc5.firebasestorage.app",
+    messagingSenderId: "413834898331",
+    appId: "1:413834898331:web:895fd1be9ba45a698dcf3e",
+    measurementId: "G-S2L8EQ764G"
+  };
+
+  const app = initializeApp(firebaseConfig);
+  const auth = getAuth(app);
+
+  // Providers
+  const googleProvider = new GoogleAuthProvider();
+  const githubProvider = new GithubAuthProvider();
+
+  // ------------------------
+  // Helper: Show Signed-in UI
+  // ------------------------
+ function showSignedIn(user) {
+  // Hide form
+  document.getElementById("signupForm").style.display = "none";
+
+  // Show signed-in box
+  const box = document.getElementById("signedInBox");
+  box.style.display = "block";
+  box.innerHTML = `
+    <div style="text-align:center; margin-bottom:1rem; font-family:sans-serif; font-size:16px; font-weight:600; color:#333;">
+      🚀 Welcome to <span style="color:#667eea;">CHAOSEVERYWHERE</span>, <b>${user.name}</b>!
+    </div>
+    <div style="display:flex;align-items:center;gap:.8rem;padding:1rem;border-radius:.75rem;background:#ecfdf5;color:#065f46;font-family:sans-serif;">
+      <img src="${user.avatar}" alt="${user.name}" style="width:32px;height:32px;border-radius:50%;object-fit:cover;"/>
+      <span>Signed in as <b>${user.name}</b></span>
+      <svg width="20" height="20" viewBox="0 0 24 24" style="margin-left:auto;">
+        <circle cx="12" cy="12" r="10" fill="#10B981"/>
+        <path d="M16.5 9l-5 5-3-3" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+    </div>
+  `;
+
+  // 🎉 Reveal the hidden div with animation
+  const extraDiv = document.getElementById("extraContent");
+  extraDiv.style.display = "block";
+  setTimeout(() => {
+    extraDiv.classList.add("show");
+  }, 50);
+}
+
+  // ------------------------
+  // Firebase Login (Google)
+  // ------------------------
+  document.querySelector(".oauthButton.google")
+    .addEventListener("click", async (e) => {
+      e.preventDefault();
+      try {
+        const result = await signInWithPopup(auth, googleProvider);
+        const user = result.user;
+        showSignedIn({
+          name: user.displayName,
+          avatar: user.photoURL || "https://www.svgrepo.com/show/475656/google-color.svg"
+        });
+      } catch (error) {
+        alert("Google login failed: " + error.message);
+      }
+    });
+
+  // ------------------------
+  // Firebase Login (GitHub)
+  // ------------------------
+  document.querySelector(".oauthButton.github")
+    .addEventListener("click", async (e) => {
+      e.preventDefault();
+      try {
+        const result = await signInWithPopup(auth, githubProvider);
+        const user = result.user;
+        showSignedIn({
+          name: user.displayName || "GitHub User",
+          avatar: user.photoURL || "https://www.svgrepo.com/show/475654/github-color.svg"
+        });
+      } catch (error) {
+        alert("GitHub login failed: " + error.message);
+      }
+    });
+
+  // ------------------------
+  // FakeAuth for Email
+  // ------------------------
+  function isAllowedEmail(email) {
+    const ALLOWED_EMAILS = [
+      "admin@noname.com",
+      "saikiran2425k@gmail.com"
+    ];
+    const ALLOWED_DOMAINS = ["noname.com"];
+    const domain = email.split("@")[1]?.toLowerCase();
+    return ALLOWED_EMAILS.includes(email.toLowerCase()) || ALLOWED_DOMAINS.includes(domain);
+  }
+
+  document.getElementById("signupForm").addEventListener("submit", (e) => {
+    e.preventDefault();
+    const email = e.target.email.value.trim();
+    if (!isAllowedEmail(email)) {
+      alert("❌ Access Denied. You are not allowed to sign in.");
+      return;
+    }
+    showSignedIn({
+      name: email.split("@")[0],
+      avatar: "https://cdn-icons-png.flaticon.com/512/149/149071.png"
+    });
+  });
+
+</script>
+
+<div id="extraContent" class="hiddenBox">
+  
+
+  <!-- Astralab/Framer Projects Style Grid -->
+  <section class="project-grid-section">
+    <h2 class="project-grid-title">Projects that went beyond brainstorming.</h2>
+    <p class="project-grid-desc">
+      From concept to creation, these works showcase our ability to transform ideas into experiences that are both innovative and impactful.
+    </p>
+    <div class="project-grid">
+      <!-- Card 1 -->
+      <div class="project-card project-card-wide" style="background-image:url('https://images.unsplash.com/photo-1476231682828-37e571bc172f?q=80&w=3474&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D');"
+        data-title="AI-Driven NPC System"
+        data-desc="A groundbreaking approach to intelligent virtual characters, this AI-driven NPC system blends adaptive behavior, natural interaction, and simulation learning to enhance both gaming and educational environments."
+        data-blog="This blog post explores the development journey, technical challenges, and innovative elements behind our AI-driven NPC system. Learn how we combined reinforcement learning, NLP, and Unreal Engine to create dynamic characters that respond naturally and evolve with user interactions."
+        data-features="• Real-time adaptive learning
+• Natural language conversation
+• Situational awareness
+• Simulation-based training support
+• Unreal Engine integration"
+      >
+        <div class="project-card-content">
+          <h3>House in the woods</h3>
+          <p>A serene and tranquil retreat, this house in the woods offers a peaceful escape from the hustle and bustle of city life.</p>
+        </div>
+      </div>
+      <!-- Card 2 -->
+      <div class="project-card" style="background-image:url('https://images.unsplash.com/photo-1464457312035-3d7d0e0c058e?q=80&w=3540&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D');"
+        data-title="House above the clouds"
+        data-desc="Perched high above the world, this house offers breathtaking views and a unique living experience. It's a place where the sky meets home, and tranquility is a way of life."
+        data-blog="Explore the journey of building a home above the clouds. This blog covers the engineering marvels and lifestyle enhancements that make this project stand out."
+        data-features="• Sky deck<br>• Cloud-level balconies<br>• Automated weather control<br>• Infinity pool"
+      >
+        <div class="project-card-content">
+          <h3>House above the clouds</h3>
+          <p>Perched high above the world, this house offers breathtaking views and a unique living experience. It's a place where the sky meets home, and tranquility is a way of life.</p>
+        </div>
+      </div>
+      <!-- Card 3 -->
+      <div class="project-card" style="background-image:url('https://images.unsplash.com/photo-1588880331179-bc9b93a8cb5e?q=80&w=3540&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D');"
+        data-title="Greens all over"
+        data-desc="A house surrounded by greenery and nature's beauty. It's the perfect place to relax, unwind, and enjoy life."
+        data-blog="Read about our approach to integrating architecture with lush landscapes. This blog highlights sustainable practices and biophilic design."
+        data-features="• Living green walls<br>• Rainwater harvesting<br>• Organic gardens<br>• Solar panels"
+      >
+        <div class="project-card-content">
+          <h3>Greens all over</h3>
+          <p>A house surrounded by greenery and nature's beauty. It's the perfect place to relax, unwind, and enjoy life.</p>
+        </div>
+      </div>
+      <!-- Card 4 -->
+      <div class="project-card project-card-wide" style="background-image:url('https://images.unsplash.com/photo-1475070929565-c985b496cb9f?q=80&w=3540&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D');"
+        data-title="Rivers are serene"
+        data-desc="A house by the river is a place of peace and tranquility. It's the perfect place to relax, unwind, and enjoy life."
+        data-blog="Dive into the making of 'Rivers are serene'—a project that harmonizes water, architecture, and lifestyle. The blog covers design inspiration and technical solutions."
+        data-features="• Riverside deck<br>• Private boat dock<br>• Water filtration system<br>• Open-plan living"
+      >
+        <div class="project-card-content">
+          <h3>Rivers are serene</h3>
+          <p>A house by the river is a place of peace and tranquility. It's the perfect place to relax, unwind, and enjoy life.</p>
+        </div>
+      </div>
+    </div>
+    <div class="opi"> 
+      
+    </div>
+    <div class="project-grid">
+      <!-- Card 1 -->
+      <div class="project-card project-card-wide" style="background-image:url('https://images.unsplash.com/photo-1476231682828-37e571bc172f?q=80&w=3474&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D');"
+        data-title="House in the woods"
+        data-desc="A serene and tranquil retreat, this house in the woods offers a peaceful escape from the hustle and bustle of city life."
+        data-blog="This blog post details the design process, challenges, and unique features of the 'House in the woods' project. Discover how we blended architecture with nature for a truly immersive experience."
+        data-features="• Eco-friendly materials<br>• Smart lighting<br>• Panoramic forest views<br>• Minimalist interiors"
+      >
+        <div class="project-card-content">
+          <h3>House in the woods</h3>
+          <p>A serene and tranquil retreat, this house in the woods offers a peaceful escape from the hustle and bustle of city life.</p>
+        </div>
+      </div>
+      <!-- Card 2 -->
+      <div class="project-card" style="background-image:url('https://images.unsplash.com/photo-1464457312035-3d7d0e0c058e?q=80&w=3540&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D');"
+        data-title="House above the clouds"
+        data-desc="Perched high above the world, this house offers breathtaking views and a unique living experience. It's a place where the sky meets home, and tranquility is a way of life."
+        data-blog="Explore the journey of building a home above the clouds. This blog covers the engineering marvels and lifestyle enhancements that make this project stand out."
+        data-features="• Sky deck<br>• Cloud-level balconies<br>• Automated weather control<br>• Infinity pool"
+      >
+        <div class="project-card-content">
+          <h3>House above the clouds</h3>
+          <p>Perched high above the world, this house offers breathtaking views and a unique living experience. It's a place where the sky meets home, and tranquility is a way of life.</p>
+        </div>
+      </div>
+      <!-- Card 3 -->
+      <div class="project-card" style="background-image:url('https://images.unsplash.com/photo-1588880331179-bc9b93a8cb5e?q=80&w=3540&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D');"
+        data-title="Greens all over"
+        data-desc="A house surrounded by greenery and nature's beauty. It's the perfect place to relax, unwind, and enjoy life."
+        data-blog="Read about our approach to integrating architecture with lush landscapes. This blog highlights sustainable practices and biophilic design."
+        data-features="• Living green walls<br>• Rainwater harvesting<br>• Organic gardens<br>• Solar panels"
+      >
+        <div class="project-card-content">
+          <h3>Greens all over</h3>
+          <p>A house surrounded by greenery and nature's beauty. It's the perfect place to relax, unwind, and enjoy life.</p>
+        </div>
+      </div>
+      <!-- Card 4 -->
+      <div class="project-card project-card-wide" style="background-image:url('https://images.unsplash.com/photo-1475070929565-c985b496cb9f?q=80&w=3540&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D');"
+        data-title="Rivers are serene"
+        data-desc="A house by the river is a place of peace and tranquility. It's the perfect place to relax, unwind, and enjoy life."
+        data-blog="Dive into the making of 'Rivers are serene'—a project that harmonizes water, architecture, and lifestyle. The blog covers design inspiration and technical solutions."
+        data-features="• Riverside deck<br>• Private boat dock<br>• Water filtration system<br>• Open-plan living"
+      >
+        <div class="project-card-content">
+          <h3>Rivers are serene</h3>
+          <p>A house by the river is a place of peace and tranquility. It's the perfect place to relax, unwind, and enjoy life.</p>
+        </div>
+      </div>
+    </div>
+    <div class="project-grid">
+      <!-- Card 1 -->
+      <div class="project-card project-card-wide" style="background-image:url('https://images.unsplash.com/photo-1476231682828-37e571bc172f?q=80&w=3474&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D');"
+        data-title="House in the woods"
+        data-desc="A serene and tranquil retreat, this house in the woods offers a peaceful escape from the hustle and bustle of city life."
+        data-blog="This blog post details the design process, challenges, and unique features of the 'House in the woods' project. Discover how we blended architecture with nature for a truly immersive experience."
+        data-features="• Eco-friendly materials<br>• Smart lighting<br>• Panoramic forest views<br>• Minimalist interiors"
+      >
+        <div class="project-card-content">
+          <h3>House in the woods</h3>
+          <p>A serene and tranquil retreat, this house in the woods offers a peaceful escape from the hustle and bustle of city life.</p>
+        </div>
+      </div>
+      <!-- Card 2 -->
+      <div class="project-card" style="background-image:url('https://images.unsplash.com/photo-1464457312035-3d7d0e0c058e?q=80&w=3540&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D');"
+        data-title="House above the clouds"
+        data-desc="Perched high above the world, this house offers breathtaking views and a unique living experience. It's a place where the sky meets home, and tranquility is a way of life."
+        data-blog="Explore the journey of building a home above the clouds. This blog covers the engineering marvels and lifestyle enhancements that make this project stand out."
+        data-features="• Sky deck<br>• Cloud-level balconies<br>• Automated weather control<br>• Infinity pool"
+      >
+        <div class="project-card-content">
+          <h3>House above the clouds</h3>
+          <p>Perched high above the world, this house offers breathtaking views and a unique living experience. It's a place where the sky meets home, and tranquility is a way of life.</p>
+        </div>
+      </div>
+      <!-- Card 3 -->
+      <div class="project-card" style="background-image:url('https://images.unsplash.com/photo-1588880331179-bc9b93a8cb5e?q=80&w=3540&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D');"
+        data-title="Greens all over"
+        data-desc="A house surrounded by greenery and nature's beauty. It's the perfect place to relax, unwind, and enjoy life."
+        data-blog="Read about our approach to integrating architecture with lush landscapes. This blog highlights sustainable practices and biophilic design."
+        data-features="• Living green walls<br>• Rainwater harvesting<br>• Organic gardens<br>• Solar panels"
+      >
+        <div class="project-card-content">
+          <h3>Greens all over</h3>
+          <p>A house surrounded by greenery and nature's beauty. It's the perfect place to relax, unwind, and enjoy life.</p>
+        </div>
+      </div>
+      <!-- Card 4 -->
+      <div class="project-card project-card-wide" style="background-image:url('https://images.unsplash.com/photo-1475070929565-c985b496cb9f?q=80&w=3540&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D');"
+        data-title="Rivers are serene"
+        data-desc="A house by the river is a place of peace and tranquility. It's the perfect place to relax, unwind, and enjoy life."
+        data-blog="Dive into the making of 'Rivers are serene'—a project that harmonizes water, architecture, and lifestyle. The blog covers design inspiration and technical solutions."
+        data-features="• Riverside deck<br>• Private boat dock<br>• Water filtration system<br>• Open-plan living"
+      >
+        <div class="project-card-content">
+          <h3>Rivers are serene</h3>
+          <p>A house by the river is a place of peace and tranquility. It's the perfect place to relax, unwind, and enjoy life.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Project Popup Modal -->
+  <div id="projectModal" class="project-modal">
+    <div class="project-modal-content">
+      <button class="project-modal-close" id="closeProjectModal">&times;</button>
+      <div class="project-modal-image" id="modalImage"></div>
+      <div class="project-modal-details">
+        <h2 id="modalTitle"></h2>
+        <p id="modalDesc"></p>
+        <div class="project-modal-blog">
+          <h4>Blog</h4>
+          <p id="modalBlog"></p>
+        </div>
+        <div class="project-modal-features">
+          <h4>Features</h4>
+          <p id="modalFeatures"></p>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<style>
+.project-grid-section {
+  margin: 3rem auto 2rem auto;
+  max-width: 1100px;
+  padding: 0 1rem;
+  font-family: 'Josefin Sans', 'DM Serif Display', serif;
+}
+.project-grid-title {
+  font-family: 'DM Serif Display', serif;
+  font-size: 2.2rem;
+  margin-bottom: .5rem;
+  letter-spacing: 1px;
+  text-align: center;
+}
+.project-grid-desc {
+  text-align: center;
+  font-size: 1.1rem;
+  margin-bottom: 2.5rem;
+  color: #222;
+}
+.project-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  grid-template-rows: repeat(2, minmax(220px, 1fr));
+  gap: 28px;
+}
+.project-card {
+  background-size: cover;
+  background-position: center;
+  border-radius: 18px;
+  box-shadow: 0 4px 32px rgba(34,42,53,0.09), 0 2px 8px rgba(34,42,53,0.13);
+  position: relative;
+  overflow: hidden;
+  display: flex;
+  align-items: flex-end;
+  min-height: 220px;
+  transition: transform .3s cubic-bezier(.23,1.02,.64,.97), box-shadow .3s;
+  cursor: pointer;
+  opacity: 0;
+  transform: translateY(60px) scale(0.97);
+  animation: gridFadeIn 1.1s cubic-bezier(.23,1.02,.64,.97) forwards;
+}
+.project-card-wide {
+  grid-column: span 2;
+  min-height: 260px;
+}
+.project-card-content {
+  background: linear-gradient(0deg,rgba(0,0,0,0.65) 80%,rgba(0,0,0,0.05) 100%);
+  color: #fff;
+  padding: 2rem 1.5rem 1.2rem 1.5rem;
+  border-radius: 0 0 18px 18px;
+  width: 100%;
+  transition: background .3s;
+}
+.project-card h3 {
+  font-size: 1.5rem;
+  font-weight: bold;
+  margin-bottom: .7rem;
+  letter-spacing: 1px;
+}
+.project-card p {
+  font-size: 1rem;
+  font-weight: 400;
+  color: #e5e5e5;
+}
+.project-card:hover {
+  transform: scale(1.035) translateY(-8px);
+  box-shadow: 0 8px 40px rgba(34,42,53,0.18), 0 2px 8px rgba(34,42,53,0.13);
+  z-index: 2;
+}
+@media (max-width: 900px) {
+  .project-grid { grid-template-columns: 1fr; grid-template-rows: none; }
+  .project-card, .project-card-wide { grid-column: span 1; min-height: 180px;}
+  .project-card-content { padding: 1.2rem 1rem; }
+}
+@keyframes gridFadeIn {
+  from { opacity: 0; transform: translateY(60px) scale(0.97);}
+  to { opacity: 1; transform: translateY(0) scale(1);}
+}
+
+/* Modal Styles */
+.project-modal {
+  display: none;
+  position: fixed;
+  z-index: 99999;
+  left: 0; top: 0; width: 100vw; height: 100vh;
+  background: rgba(20,20,20,0.75);
+  justify-content: center;
+  align-items: center;
+  animation: fadeInModal .3s;
+}
+@keyframes fadeInModalBg {
+  from { background: rgba(20,20,20,0); }
+  to { background: rgba(20,20,20,0.75); }
+}
+.project-modal.show {
+  display: flex;
+}
+.project-modal-content {
+  background: #18181b;
+  color: #fff;
+  border-radius: 22px;
+  box-shadow: 0 8px 48px rgba(34,42,53,0.22);
+  max-width: 700px;
+  width: 95vw;
+  padding: 2.5rem 2rem 2rem 2rem;
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  position: relative;
+  animation: popInModal .4s cubic-bezier(.23,1.02,.64,.97);
+}
+@keyframes popInModal {
+  from { opacity: 0; transform: scale(0.93) translateY(60px);}
+  to { opacity: 1; transform: scale(1) translateY(0);}
+}
+.project-modal-close {
+  position: absolute;
+  top: 18px; right: 22px;
+  background: none;
+  border: none;
+  color: #fff;
+  font-size: 2.2rem;
+  cursor: pointer;
+  z-index: 2;
+  transition: color .2s;
+}
+.project-modal-close:hover { color: #f87171; }
+.project-modal-image {
+  width: 100%;
+  height: 260px;
+  background-size: cover;
+  background-position: center;
+  border-radius: 16px;
+  margin-bottom: 1.5rem;
+  box-shadow: 0 2px 16px rgba(34,42,53,0.13);
+}
+.project-modal-details h2 {
+  font-size: 2rem;
+  margin-bottom: .5rem;
+  font-family: 'DM Serif Display', serif;
+}
+.project-modal-details p {
+  font-size: 1.1rem;
+  color: #e5e5e5;
+  margin-bottom: 1.2rem;
+}
+.project-modal-blog, .project-modal-features {
+  margin-bottom: 1.2rem;
+}
+.project-modal-blog h4, .project-modal-features h4 {
+  font-size: 1.1rem;
+  color: #a5b4fc;
+  margin-bottom: .3rem;
+}
+.project-modal-features p {
+  font-size: 1rem;
+  color: #fbbf24;
+  line-height: 1.7;
+}
+@media (max-width: 600px) {
+  .project-modal-content { padding: 1.2rem .5rem 1.2rem .5rem; }
+  .project-modal-image { height: 140px; }
+  .project-modal-details h2 { font-size: 1.3rem; }
+}
+</style>
+<script>
+function animateProjectGrid() {
+  document.querySelectorAll('.project-card').forEach((card, i) => {
+    const rect = card.getBoundingClientRect();
+    if (rect.top < window.innerHeight * 0.92) {
+      card.style.animationDelay = (i * 0.15) + "s";
+      card.style.opacity = 1;
+      card.classList.add('show');
+    }
+  });
+}
+window.addEventListener('scroll', animateProjectGrid);
+window.addEventListener('DOMContentLoaded', animateProjectGrid);
+
+// Project Card Popup Logic
+document.querySelectorAll('.project-card').forEach(card => {
+  card.addEventListener('click', function() {
+    const modal = document.getElementById('projectModal');
+    document.getElementById('modalImage').style.backgroundImage = card.style.backgroundImage;
+    document.getElementById('modalTitle').textContent = card.getAttribute('data-title');
+    document.getElementById('modalDesc').textContent = card.getAttribute('data-desc');
+    document.getElementById('modalBlog').textContent = card.getAttribute('data-blog');
+    document.getElementById('modalFeatures').innerHTML = card.getAttribute('data-features');
+    modal.classList.add('show');
+    
+  });
+});
+function closeModal() {
+  document.getElementById('projectModal').classList.remove('show');
+}
+
+document.getElementById('closeProjectModal').onclick = closeModal;
+document.getElementById('projectModal').addEventListener('click', function(e) {
+  if (e.target === this) closeModal();
+});
+window.addEventListener('keydown', function(e) {
+  // Allow ESC key to close modal and restore scroll
+  if (e.key === "Escape") {
+    closeModal();
+  }
+});
+</script>
+</body> </html>
