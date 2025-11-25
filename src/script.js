@@ -839,7 +839,7 @@ document.getElementById('sh').addEventListener('click', () => {
     </div>
     `;
     animateCamera({ x: 2.0, y: 1.5, z: 3.0 }, { x: 0, z: 0, y: -0.1 });
-    currentAudio = new Audio('https://github.com/NONAME-OP/glb/releases/download/op/luffy.mp3?raw=1');
+    currentAudio = new Audio('AUDIO/zzz.mp3');
     currentAudio.play();
 })
 
