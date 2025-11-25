@@ -458,7 +458,7 @@ document.getElementById('aglaea').addEventListener('click', () => {
 </div>
     `;
     animateCamera({ x: 1.0, y: 0.5, z: 1.9 },{ x:0,z:0,y: -0.1 })//ANIMATE CAMERA
-    currentAudio = new Audio('https://github.com/NONAME-OP/glb/releases/download/op/kk.mp3?raw=1');
+    currentAudio = new Audio('dist/audio/kk.mp3');
     currentAudio.play();
 })
 
@@ -526,7 +526,7 @@ document.getElementById('thalia').addEventListener('click', () => {
 </div>
     `;
     animateCamera({ x: 1.0, y: 0.5, z: 1.9 },{ x:0,z:0,y: -0.1 })//ANIMATE CAMERA
-    currentAudio = new Audio('https://github.com/NONAME-OP/glb/releases/download/op/kk.mp3?raw=1');
+    currentAudio = new Audio('dist/assets/audio/kk.mp3');
     currentAudio.play();
 })
 
@@ -594,7 +594,7 @@ document.getElementById('thalia').addEventListener('click', () => {
 </div>
     `;
     animateCamera({ x: 3.6, y: 3.3, z: 2.7 },{x:0,z:0, y: -0.1 })
-    currentAudio = new Audio('https://github.com/NONAME-OP/glb/releases/download/op/vinint.mp3?raw=1');
+    currentAudio = new Audio('dist/audio/vinint.mp3');
     currentAudio.play();
 })
 
@@ -661,7 +661,7 @@ document.getElementById('euphre').addEventListener('click', () => {
 </div>
     `;
     animateCamera({ x: -2.4, y: 0.4, z: -0.4 },{x:0,z:0, y: -0.1 })
-    currentAudio = new Audio('https://github.com/NONAME-OP/glb/releases/download/op/josi.mp3?raw=1');
+    currentAudio = new Audio('dist/audio/josi.mp3');
     currentAudio.play();
 })
 
@@ -728,7 +728,7 @@ document.getElementById('SAI').addEventListener('click', () => {
 </div>
     `;
     animateCamera({ x: -0.010925 , y: -0.000001 , z: 5.4181  },{ y: 0 })
-    currentAudio = new Audio('https://github.com/NONAME-OP/glb/releases/download/op/zzz.mp3?raw=1');
+    currentAudio = new Audio('dist/audio/zz.mp3');
     currentAudio.play();//ANIMATE CAMERA
 })
 
@@ -794,7 +794,7 @@ document.getElementById('KI').addEventListener('click', () => {
 </div>
     `;
     animateCamera({ x: -4.05, y: 0.5, z: 2.5},{x:0,z:0, y: -0.0 })
-    currentAudio = new Audio('https://github.com/NONAME-OP/glb/releases/download/op/s.mp3?raw=1');
+    currentAudio = new Audio('dist/audio/s.mp3');
     currentAudio.play();
 })//suk
 document.getElementById('RAN').addEventListener('click', () => {
@@ -907,7 +907,7 @@ document.getElementById('sh').addEventListener('click', () => {
     </div>
     `;
     animateCamera({ x: 2.0, y: 1.5, z: 3.0 }, { x: 0, z: 0, y: -0.1 });
-    currentAudio = new Audio('AUDIO/luffy.mp3');
+    currentAudio = new Audio('/dist/AUDIO/vv.mp3');
     currentAudio.play();
 })
 
