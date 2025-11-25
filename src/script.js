@@ -859,7 +859,7 @@ document.getElementById('RAN').addEventListener('click', () => {
 </div>
     `;
     animateCamera({ x: -0.4, y: 4.4, z: 1 },{x:0,z:0, y: -0.0 })
-    currentAudio = new Audio('/static/audio/suku.mp3');
+    currentAudio = new Audio('/dist/AUDIO/luffy.mp3');
     currentAudio.play();
 })
 
